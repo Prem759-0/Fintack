@@ -88,6 +88,24 @@ function loadState() {
     if (nts) S.notifications = JSON.parse(nts);
     S.activeCurrency = S.profile.currency || 'USD';
   } catch(e) { console.error('Load error:', e); }
+  // Sync name/email from auth session
+  try {
+    const authUser = JSON.parse(localStorage.getItem('ft2_auth_user'));
+    if (authUser && authUser.name) {
+      S.profile.name  = authUser.name.split(' ')[0] || authUser.name;
+      S.profile.email = authUser.email || S.profile.email;
+    }
+  } catch(e) {}
+}
+
+// ==========================================
+//  LOGOUT
+// ==========================================
+
+function handleLogout() {
+  if (!confirm('Are you sure you want to sign out?')) return;
+  localStorage.removeItem('ft2_auth_user');
+  window.location.replace('login.html');
 }
 
 const save = {

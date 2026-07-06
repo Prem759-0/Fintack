@@ -19,6 +19,16 @@
 </head>
 <body>
 
+  <!-- ======================== AUTH GUARD ======================== -->
+  <script>
+    (function() {
+      try {
+        var u = JSON.parse(localStorage.getItem('ft2_auth_user'));
+        if (!u || !u.email) { window.location.replace('login.html'); }
+      } catch(e) { window.location.replace('login.html'); }
+    })();
+  </script>
+
   <!-- ======================== ANIMATED BACKGROUND ======================== -->
   <div class="bg-orbs" aria-hidden="true">
     <div class="orb orb-1"></div>
@@ -159,6 +169,11 @@
         <button class="profile-btn" id="profileBtn" title="Profile">
           <span class="avatar" id="avatarInitials">U</span>
           <div class="profile-pulse"></div>
+        </button>
+
+        <!-- Logout -->
+        <button class="icon-btn" id="logoutBtn" title="Sign Out" onclick="handleLogout()" style="color:var(--expense,#f0415a);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
     </header>

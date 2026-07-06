@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinTrack Pro – Sign In</title>
+  <meta name="description" content="Sign in to FinTrack Pro – Your smart personal finance tracker with real-time charts, budgets, and goals." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base:        #060912;
+      --bg-surface:     #0c1020;
+      --bg-card:        rgba(255,255,255,0.035);
+      --bg-card-hover:  rgba(255,255,255,0.065);
+      --border:         rgba(255,255,255,0.07);
+      --border-hover:   rgba(255,255,255,0.14);
+      --text-primary:   #eef2ff;
+      --text-secondary: #7c87a6;
+      --text-muted:     #444d66;
+      --accent:         #6c63ff;
+      --accent-rgb:     108,99,255;
+      --accent-soft:    rgba(108,99,255,0.15);
+      --accent-glow:    rgba(108,99,255,0.4);
+      --accent-2:       #a78bfa;
+      --income:         #10d9a8;
+      --expense:        #f0415a;
+      --savings:        #f59e0b;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow-glow: 0 0 60px rgba(108,99,255,0.12);
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+      --transition-slow: 0.4s cubic-bezier(0.4,0,0.2,1);
+      --transition-spring: 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg-base); color: var(--text-primary); overflow: hidden; }
+
+    /* BG */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; animation: orbFloat 20s ease-in-out infinite alternate; }
+    .orb-1 { width: 600px; height: 600px; top: -180px; left: -180px; background: radial-gradient(circle, #6c63ff 0%, transparent 70%); animation-duration: 22s; }
+    .orb-2 { width: 500px; height: 500px; bottom: -120px; right: -120px; background: radial-gradient(circle, #a78bfa 0%, transparent 70%); animation-duration: 18s; animation-delay: -5s; }
+    .orb-3 { width: 350px; height: 350px; top: 50%; left: 55%; background: radial-gradient(circle, #10d9a8 0%, transparent 70%); opacity: 0.15; animation-duration: 25s; animation-delay: -12s; }
+    .orb-4 { width: 280px; height: 280px; bottom: 30%; right: 40%; background: radial-gradient(circle, #f0415a 0%, transparent 70%); opacity: 0.12; animation-duration: 20s; animation-delay: -8s; }
+    @keyframes orbFloat { 0% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-40px) scale(1.08); } 100% { transform: translate(-20px,20px) scale(0.95); } }
+    .bg-grid { position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px); background-size: 40px 40px; }
+
+    /* LAYOUT */
+    .auth-wrapper { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; height: 100vh; }
+
+    /* LEFT HERO */
+    .auth-hero { display: flex; flex-direction: column; justify-content: space-between; padding: 48px 56px; border-right: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero-brand { display: flex; align-items: center; gap: 14px; }
+    .hero-brand-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px var(--accent-glow); flex-shrink: 0; }
+    .hero-brand-name { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; }
+    .hero-brand-pro { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-brand-tag { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+    .hero-center { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .hero-headline { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem,3.5vw,3rem); font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
+    .hero-headline .hl-gradient { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 50%, var(--income) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-sub { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; max-width: 380px; margin-bottom: 40px; }
+    .hero-stats { display: flex; gap: 20px; margin-bottom: 40px; }
+    .hs-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; backdrop-filter: blur(12px); flex: 1; transition: var(--transition); }
+    .hs-card:hover { background: var(--bg-card-hover); border-color: var(--border-hover); transform: translateY(-2px); }
+    .hs-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 700; }
+    .hs-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; }
+    .hs-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+    .hero-features { display: flex; flex-wrap: wrap; gap: 10px; }
+    .feat-pill { background: var(--bg-card); border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px; font-size: 0.8rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(8px); transition: var(--transition); }
+    .feat-pill:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-2); }
+
+    /* RIGHT PANEL */
+    .auth-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 56px; overflow-y: auto; }
+    .auth-card { width: 100%; max-width: 420px; animation: slideUp 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* TABS */
+    .auth-tabs { display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 5px; margin-bottom: 32px; }
+    .auth-tab { flex: 1; padding: 10px 0; background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); border-radius: calc(var(--radius-md) - 4px); transition: var(--transition); }
+    .auth-tab.active { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: 0 4px 20px var(--accent-glow); }
+    .auth-tab:not(.active):hover { color: var(--text-primary); }
+
+    /* FORM */
+    .auth-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.7rem; font-weight: 700; margin-bottom: 6px; }
+    .auth-sub { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 28px; }
+    .auth-form { display: flex; flex-direction: column; gap: 18px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .form-input-wrap { position: relative; }
+    .form-input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; transition: var(--transition); z-index: 1; }
+    .form-input { width: 100%; padding: 14px 46px 14px 46px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; transition: var(--transition); backdrop-filter: blur(8px); }
+    .form-input::placeholder { color: var(--text-muted); }
+    .form-input:focus { border-color: var(--accent); background: rgba(108,99,255,0.06); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .form-input-wrap:focus-within .form-input-icon { color: var(--accent); }
+    .password-toggle { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0; line-height: 0; transition: var(--transition); }
+    .password-toggle:hover { color: var(--text-secondary); }
+
+    /* Strength */
+    .strength-bar-wrap { display: flex; gap: 4px; margin-top: 6px; }
+    .strength-seg { flex: 1; height: 3px; border-radius: 99px; background: var(--border); transition: var(--transition-slow); }
+    .strength-seg.s1 { background: var(--expense); }
+    .strength-seg.s2 { background: var(--savings); }
+    .strength-seg.s3 { background: var(--income); }
+    .strength-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+    #signupStrengthWrap { display: none; }
+
+    /* Options row */
+    .form-options { display: flex; align-items: center; justify-content: space-between; }
+    .custom-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .custom-check input { display: none; }
+    .custom-check-box { width: 18px; height: 18px; flex-shrink: 0; border: 1.5px solid var(--border-hover); border-radius: 5px; background: var(--bg-card); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+    .custom-check input:checked ~ .custom-check-box { background: var(--accent); border-color: var(--accent); }
+    .custom-check-box svg { display: none; }
+    .custom-check input:checked ~ .custom-check-box svg { display: block; }
+    .check-label { font-size: 0.85rem; color: var(--text-secondary); user-select: none; }
+    .forgot-link { font-size: 0.85rem; color: var(--accent-2); text-decoration: none; background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: var(--transition); }
+    .forgot-link:hover { color: var(--accent); text-decoration: underline; }
+
+    /* Submit button */
+    .btn-auth { width: 100%; padding: 15px 24px; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%); border: none; border-radius: var(--radius-sm); color: #fff; font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: var(--transition-spring); position: relative; overflow: hidden; box-shadow: 0 8px 30px var(--accent-glow); letter-spacing: 0.03em; }
+    .btn-auth::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%); opacity: 0; transition: var(--transition); }
+    .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 14px 40px var(--accent-glow); }
+    .btn-auth:hover::before { opacity: 1; }
+    .btn-auth:active { transform: translateY(0); }
+    .btn-auth span { position: relative; z-index: 1; }
+    .btn-auth .spinner { display: none; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; margin: 0 auto; animation: spin 0.7s linear infinite; }
+    .btn-auth.loading .btn-text { display: none; }
+    .btn-auth.loading .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Divider */
+    .auth-divider { display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: 0.82rem; margin: 4px 0; }
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Social */
+    .social-btns { display: flex; gap: 10px; }
+    .btn-social { flex: 1; padding: 12px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); backdrop-filter: blur(8px); }
+    .btn-social:hover { background: var(--bg-card-hover); border-color: var(--border-hover); color: var(--text-primary); transform: translateY(-1px); }
+
+    /* Error */
+    .form-error { background: rgba(240,65,90,0.1); border: 1px solid rgba(240,65,90,0.3); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 0.85rem; color: var(--expense); display: none; align-items: center; gap: 8px; }
+    .form-error.show { display: flex; }
+
+    /* Toast */
+    .success-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(16,217,168,0.12); border: 1px solid rgba(16,217,168,0.4); border-radius: var(--radius-md); padding: 14px 24px; color: var(--income); font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(16px); z-index: 9999; transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 8px 40px rgba(0,0,0,0.4); white-space: nowrap; }
+    .success-toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* Name row */
+    .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Form panels */
+    .auth-form-panel { display: none; }
+    .auth-form-panel.active { display: flex; flex-direction: column; gap: 0; }
+
+    /* Floating nums */
+    .floating-numbers { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .float-num { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 500; color: var(--accent); opacity: 0; animation: floatUp 8s ease-in-out infinite; }
+    @keyframes floatUp { 0% { opacity: 0; transform: translateY(30px); } 20% { opacity: 0.35; } 80% { opacity: 0.35; } 100% { opacity: 0; transform: translateY(-80px); } }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .auth-wrapper { grid-template-columns: 1fr; overflow-y: auto; }
+      html, body { overflow: auto; }
+      .auth-hero { padding: 36px 32px 28px; border-right: none; border-bottom: 1px solid var(--border); }
+      .hero-center { display: none; }
+      .auth-panel { padding: 36px 32px; }
+    }
+    @media (max-width: 480px) {
+      .auth-hero { padding: 24px 20px; }
+      .auth-panel { padding: 28px 20px; }
+      .name-row { grid-template-columns: 1fr; }
+      .social-btns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="orb orb-3"></div><div class="orb orb-4"></div>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div class="success-toast" id="successToast" role="status" aria-live="polite">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="toastMsg">Welcome to FinTrack Pro!</span>
+  </div>
+
+  <div class="auth-wrapper">
+
+    <!-- LEFT HERO -->
+    <div class="auth-hero">
+      <div class="floating-numbers" id="floatingNumbers" aria-hidden="true"></div>
+
+      <div class="hero-brand">
+        <div class="hero-brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="hero-brand-name">FinTrack <span class="hero-brand-pro">Pro</span></div>
+          <div class="hero-brand-tag">Smart Finance</div>
+        </div>
+      </div>
+
+      <div class="hero-center">
+        <h1 class="hero-headline">Take control of<br><span class="hl-gradient">your finances,</span><br>effortlessly.</h1>
+        <p class="hero-sub">Track income, manage budgets, set goals, and visualize your financial health with beautiful real-time charts and insights.</p>
+        <div class="hero-stats">
+          <div class="hs-card">
+            <div class="hs-val"><span class="hs-dot" style="background:var(--income)"></span>+$4.2K</div>
+            <div class="hs-label">Monthly savings avg.</div>
+          </div>
+          <div class="hs-card">
+            <div class="hs-val">🎯 94%</div>
+            <div class="hs-label">Budget adherence</div>
+          </div>
+          <div class="hs-card">
+            <div class="hs-val">📈 12</div>
+            <div class="hs-label">Goals achieved</div>
+          </div>
+        </div>
+        <div class="hero-features">
+          <div class="feat-pill">📊 Real-time Charts</div>
+          <div class="feat-pill">🎯 Smart Budgets</div>
+          <div class="feat-pill">💱 Multi-Currency</div>
+          <div class="feat-pill">📤 CSV Export</div>
+          <div class="feat-pill">🌙 Dark Mode</div>
+          <div class="feat-pill">🔔 Notifications</div>
+        </div>
+      </div>
+
+      <div style="font-size:0.78rem;color:var(--text-muted);">© 2025 FinTrack Pro. Built with ❤️</div>
+    </div>
+
+    <!-- RIGHT AUTH PANEL -->
+    <div class="auth-panel">
+      <div class="auth-card">
+
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" id="tabLogin" role="tab" aria-selected="true" onclick="switchTab('login')">Sign In</button>
+          <button class="auth-tab" id="tabSignup" role="tab" aria-selected="false" onclick="switchTab('signup')">Create Account</button>
+        </div>
+
+        <!-- LOGIN -->
+        <div class="auth-form-panel active" id="panelLogin">
+          <h2 class="auth-title">Welcome back 👋</h2>
+          <p class="auth-sub">Sign in to your FinTrack Pro account</p>
+          <form class="auth-form" id="loginForm" novalidate onsubmit="handleLogin(event)">
+            <div class="form-error" id="loginError">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <span id="loginErrorMsg">Invalid email or password.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="loginEmail">Email address</label>
+              <div class="form-input-wrap">
+                <svg class="form-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2"/></svg>
+                <input type="email" id="loginEmail" class="form-input" placeholder="you@example.com" autocomplete="email" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="loginPassword">Password</label>
+              <div class="form-input-wrap">
+                <svg class="form-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="2"/></svg>
+                <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" autocomplete="current-password" required />
+                <button type="button" class="password-toggle" onclick="togglePwd('loginPassword',this)" aria-label="Toggle password">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-options">
+              <label class="custom-check" for="rememberMeChk">
+                <input type="checkbox" id="rememberMeChk" />
+                <div class="custom-check-box"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <span class="check-label">Remember me</span>
+              </label>
+              <button type="button" class="forgot-link" onclick="showForgot()">Forgot password?</button>
+            </div>
+            <button type="submit" class="btn-auth" id="loginBtn">
+              <span class="btn-text">Sign In →</span>
+              <div class="spinner"></div>
+            </button>
+            <div class="auth-divider">or continue with</div>
+            <div class="social-btns">
+              <button type="button" class="btn-social" onclick="handleSocialLogin('Google')">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Google
+              </button>
+              <button type="button" class="btn-social" onclick="handleSocialLogin('GitHub')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub
+              </button>
+              <button type="button" class="btn-social" onclick="handleSocialLogin('Apple')">
+                <svg width="17" height="17" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 376.7 0 272.3 0 174.7c0-93.3 46.1-142.9 111.1-142.9 68.7 0 109.3 55.6 163.4 55.6 52 0 100-55.6 171-55.6 68.4 0 114.1 38.2 143.1 91.2zm-256.5-52.9c-27.8-34.4-54.9-65.6-95.3-65.6-38.5 0-69.9 25.2-87.5 65.6-16.1 37.8-24.9 87.7-24.9 135.9 0 45.2 8.8 89.7 24.9 130.3 17.1 42.8 48.7 70.6 87.5 70.6 41 0 69.5-31.2 95.3-67.5 26.8-37.4 44.7-86.4 44.7-133.4-.1-51.8-16.5-102.8-44.7-136z"/></svg>
+                Apple
+              </button>
+            </div>
+            <p style="font-size:0.76rem;color:var(--text-muted);text-align:center;margin-top:4px;">Demo: <code style="color:var(--accent-2)">demo@fintrack.pro</code> / <code style="color:var(--accent-2)">demo1234</code></p>
+          </form>
+        </div>
+
+        <!-- SIGNUP -->
+        <div class="auth-form-panel" id="panelSignup">
+          <h2 class="auth-title">Create account ✨</h2>
+          <p class="auth-sub">Start your financial journey today — it's free!</p>
+          <form class="auth-form" id="signupForm" novalidate onsubmit="handleSignup(event)">
+            <div class="form-error" id="signupError">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <span id="signupErrorMsg">Please fix the errors above.</span>
+            </div>
+            <div class="name-row">
+              <div class="form-group">
+                <label class="form-label" for="firstName">First name</label>
+                <div class="form-input-wrap">
+                  <svg class="form-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>
+                  <input type="text" id="firstName" class="form-input" placeholder="John" autocomplete="given-name" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="lastName">Last name</label>
+                <div class="form-input-wrap">
+                  <svg class="form-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>
+                  <input type="text" id="lastName" class="form-input" placeholder="Doe" autocomplete="family-name" required />
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signupEmail">Email address</label>
+              <div class="form-input-wrap">
+                <svg class="form-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2"/></svg>
+                <input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" autocomplete="email" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signupPassword">Password</label>
+              <div class="form-input-wrap">
+                <svg class="form-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="2"/></svg>
+                <input type="password" id="signupPassword" class="form-input" placeholder="Create a strong password" autocomplete="new-password" required oninput="checkStrength(this.value)" />
+                <button type="button" class="password-toggle" onclick="togglePwd('signupPassword',this)" aria-label="Toggle password">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+                </button>
+              </div>
+              <div id="signupStrengthWrap">
+                <div class="strength-bar-wrap">
+                  <div class="strength-seg" id="seg1"></div><div class="strength-seg" id="seg2"></div>
+                  <div class="strength-seg" id="seg3"></div><div class="strength-seg" id="seg4"></div>
+                </div>
+                <div class="strength-label" id="strengthLabel">Weak</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="confirmPassword">Confirm password</label>
+              <div class="form-input-wrap">
+                <svg class="form-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="2"/></svg>
+                <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password" autocomplete="new-password" required />
+                <button type="button" class="password-toggle" onclick="togglePwd('confirmPassword',this)" aria-label="Toggle password">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="custom-check" for="agreeTerms">
+                <input type="checkbox" id="agreeTerms" required />
+                <div class="custom-check-box"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <span class="check-label">I agree to the <a href="#" style="color:var(--accent-2);text-decoration:none">Terms</a> &amp; <a href="#" style="color:var(--accent-2);text-decoration:none">Privacy Policy</a></span>
+              </label>
+            </div>
+            <button type="submit" class="btn-auth" id="signupBtn">
+              <span class="btn-text">Create Account →</span>
+              <div class="spinner"></div>
+            </button>
+            <div class="auth-divider">or sign up with</div>
+            <div class="social-btns">
+              <button type="button" class="btn-social" onclick="handleSocialLogin('Google')">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Google
+              </button>
+              <button type="button" class="btn-social" onclick="handleSocialLogin('GitHub')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub
+              </button>
+              <button type="button" class="btn-social" onclick="handleSocialLogin('Apple')">
+                <svg width="17" height="17" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 376.7 0 272.3 0 174.7c0-93.3 46.1-142.9 111.1-142.9 68.7 0 109.3 55.6 163.4 55.6 52 0 100-55.6 171-55.6 68.4 0 114.1 38.2 143.1 91.2zm-256.5-52.9c-27.8-34.4-54.9-65.6-95.3-65.6-38.5 0-69.9 25.2-87.5 65.6-16.1 37.8-24.9 87.7-24.9 135.9 0 45.2 8.8 89.7 24.9 130.3 17.1 42.8 48.7 70.6 87.5 70.6 41 0 69.5-31.2 95.3-67.5 26.8-37.4 44.7-86.4 44.7-133.4-.1-51.8-16.5-102.8-44.7-136z"/></svg>
+                Apple
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    'use strict';
+    const AUTH_KEY = 'ft2_auth_user';
+
+    (function checkAuth() {
+      try {
+        const u = JSON.parse(localStorage.getItem(AUTH_KEY));
+        if (u && u.email) window.location.replace('index.html');
+      } catch(e) {}
+    })();
+
+    function getUser() { try { return JSON.parse(localStorage.getItem(AUTH_KEY)); } catch { return null; } }
+    function saveUser(u) { localStorage.setItem(AUTH_KEY, JSON.stringify(u)); }
+    function getAccounts() { try { return JSON.parse(localStorage.getItem('ft2_accounts')) || []; } catch { return []; } }
+
+    function switchTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('tabLogin').classList.toggle('active', isLogin);
+      document.getElementById('tabSignup').classList.toggle('active', !isLogin);
+      document.getElementById('panelLogin').classList.toggle('active', isLogin);
+      document.getElementById('panelSignup').classList.toggle('active', !isLogin);
+      document.getElementById('loginError').classList.remove('show');
+      document.getElementById('signupError').classList.remove('show');
+    }
+
+    function togglePwd(id, btn) {
+      const input = document.getElementById(id);
+      const isText = input.type === 'text';
+      input.type = isText ? 'password' : 'text';
+      btn.innerHTML = isText
+        ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>'
+        : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    }
+
+    function checkStrength(val) {
+      const wrap = document.getElementById('signupStrengthWrap');
+      const label = document.getElementById('strengthLabel');
+      const segs = ['seg1','seg2','seg3','seg4'].map(id => document.getElementById(id));
+      if (!val) { wrap.style.display = 'none'; return; }
+      wrap.style.display = 'block';
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const levels = [
+        { label:'Weak', cls:'s1', color:'var(--expense)' },
+        { label:'Fair', cls:'s2', color:'var(--savings)' },
+        { label:'Good', cls:'s2', color:'var(--savings)' },
+        { label:'Strong', cls:'s3', color:'var(--income)' }
+      ];
+      const lv = levels[Math.max(0, score - 1)];
+      label.textContent = lv.label; label.style.color = lv.color;
+      segs.forEach((seg, i) => { seg.className = 'strength-seg'; if (i < score) seg.classList.add(lv.cls); });
+    }
+
+    function showError(panel, msg) {
+      const el = document.getElementById(panel + 'Error');
+      document.getElementById(panel + 'ErrorMsg').textContent = msg;
+      el.classList.add('show');
+    }
+    function hideError(panel) { document.getElementById(panel + 'Error').classList.remove('show'); }
+
+    function showToast(msg) {
+      const t = document.getElementById('successToast');
+      document.getElementById('toastMsg').textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    function setLoading(btnId, v) { document.getElementById(btnId).classList.toggle('loading', v); }
+    function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+    function saveProfile(name, email) {
+      const existing = JSON.parse(localStorage.getItem('ft2_profile') || '{}');
+      existing.name = name; existing.email = email;
+      localStorage.setItem('ft2_profile', JSON.stringify(existing));
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      hideError('login');
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass  = document.getElementById('loginPassword').value;
+      if (!email || !pass) { showError('login', 'Please fill in all fields.'); return; }
+      if (!isValidEmail(email)) { showError('login', 'Please enter a valid email address.'); return; }
+      setLoading('loginBtn', true);
+      setTimeout(() => {
+        setLoading('loginBtn', false);
+        const accounts = getAccounts();
+        const match = accounts.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass);
+        const isDemo = email.toLowerCase() === 'demo@fintrack.pro' && pass === 'demo1234';
+        if (match || isDemo) {
+          const firstName = match ? match.firstName : 'Demo';
+          const lastName  = match ? match.lastName  : 'User';
+          saveUser({ name: firstName + ' ' + lastName, email, loggedAt: Date.now() });
+          saveProfile(firstName, email);
+          showToast('Welcome back, ' + firstName + '! 🎉');
+          setTimeout(() => window.location.replace('index.html'), 1200);
+        } else {
+          showError('login', 'Invalid email or password. Try: demo@fintrack.pro / demo1234');
+        }
+      }, 1100);
+    }
+
+    function handleSignup(e) {
+      e.preventDefault();
+      hideError('signup');
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName  = document.getElementById('lastName').value.trim();
+      const email     = document.getElementById('signupEmail').value.trim();
+      const pass      = document.getElementById('signupPassword').value;
+      const confirm   = document.getElementById('confirmPassword').value;
+      const agreed    = document.getElementById('agreeTerms').checked;
+      if (!firstName || !lastName) { showError('signup', 'Please enter your full name.'); return; }
+      if (!isValidEmail(email)) { showError('signup', 'Please enter a valid email address.'); return; }
+      if (pass.length < 6) { showError('signup', 'Password must be at least 6 characters.'); return; }
+      if (pass !== confirm) { showError('signup', 'Passwords do not match.'); return; }
+      if (!agreed) { showError('signup', 'Please agree to the Terms & Privacy Policy.'); return; }
+      setLoading('signupBtn', true);
+      setTimeout(() => {
+        setLoading('signupBtn', false);
+        const accounts = getAccounts();
+        if (accounts.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+          showError('signup', 'An account with this email already exists. Sign in instead.'); return;
+        }
+        accounts.push({ firstName, lastName, email, password: pass, createdAt: Date.now() });
+        localStorage.setItem('ft2_accounts', JSON.stringify(accounts));
+        saveUser({ name: firstName + ' ' + lastName, email, loggedAt: Date.now() });
+        saveProfile(firstName, email);
+        showToast('Account created! Welcome, ' + firstName + '! 🚀');
+        setTimeout(() => window.location.replace('index.html'), 1400);
+      }, 1400);
+    }
+
+    function handleSocialLogin(provider) {
+      showToast('Signing in with ' + provider + '...');
+      const demoEmail = provider.toLowerCase() + '@fintrack.pro';
+      saveUser({ name: 'Demo User', email: demoEmail, loggedAt: Date.now() });
+      saveProfile('Demo', demoEmail);
+      setTimeout(() => window.location.replace('index.html'), 1200);
+    }
+
+    function showForgot() {
+      const email = document.getElementById('loginEmail').value.trim();
+      if (!email || !isValidEmail(email)) { showError('login', 'Enter your email above first, then click Forgot password?'); return; }
+      hideError('login');
+      showToast('Password reset link sent to ' + email + ' \uD83D\uDCE7');
+    }
+
+    // Floating numbers
+    (function() {
+      const nums = ['+$1,240','−$380','📈 +12%','$4.2K','💼 Salary','🎯 Goal','📊 Budget','+$720','−$55','95%'];
+      const c = document.getElementById('floatingNumbers');
+      nums.forEach((txt, i) => {
+        const el = document.createElement('div');
+        el.className = 'float-num';
+        el.textContent = txt;
+        el.style.left = (8 + Math.random() * 80) + '%';
+        el.style.bottom = (-40 + Math.random() * 120) + 'px';
+        el.style.animationDelay = (i * 1.2 + Math.random() * 2) + 's';
+        el.style.animationDuration = (7 + Math.random() * 6) + 's';
+        c.appendChild(el);
+      });
+    })();
+  </script>
+</body>
+</html>
