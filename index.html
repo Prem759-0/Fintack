@@ -153,17 +153,52 @@
           <span class="notif-dot" id="notifDot"></span>
         </button>
 
-        <!-- Currency selector -->
-        <div class="currency-selector-wrap">
-          <label for="globalCurrency" class="sr-only">Currency</label>
-          <select id="globalCurrency" class="currency-select">
-            <option value="USD">🇺🇸 USD</option>
-            <option value="EUR">🇪🇺 EUR</option>
-            <option value="GBP">🇬🇧 GBP</option>
-            <option value="INR">🇮🇳 INR</option>
-            <option value="JPY">🇯🇵 JPY</option>
+        <!-- Currency selector (custom dropdown) -->
+        <div class="currency-selector-wrap" id="currencyDropdownWrap">
+          <!-- Hidden native select for JS compatibility -->
+          <select id="globalCurrency" style="display:none">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="INR">INR</option>
+            <option value="JPY">JPY</option>
           </select>
+          <!-- Custom trigger button -->
+          <button class="cur-trigger" id="curTrigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span class="cur-flag" id="curFlag">🇺🇸</span>
+            <span class="cur-code" id="curCode">USD</span>
+            <svg class="cur-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <!-- Dropdown panel -->
+          <div class="cur-panel" id="curPanel" role="listbox" aria-label="Select currency">
+            <div class="cur-option" data-val="USD" data-flag="🇺🇸" data-label="US Dollar" role="option">
+              <span class="cur-opt-flag">🇺🇸</span>
+              <div class="cur-opt-info"><span class="cur-opt-code">USD</span><span class="cur-opt-name">US Dollar</span></div>
+              <svg class="cur-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="cur-option" data-val="EUR" data-flag="🇪🇺" data-label="Euro" role="option">
+              <span class="cur-opt-flag">🇪🇺</span>
+              <div class="cur-opt-info"><span class="cur-opt-code">EUR</span><span class="cur-opt-name">Euro</span></div>
+              <svg class="cur-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="cur-option" data-val="GBP" data-flag="🇬🇧" data-label="British Pound" role="option">
+              <span class="cur-opt-flag">🇬🇧</span>
+              <div class="cur-opt-info"><span class="cur-opt-code">GBP</span><span class="cur-opt-name">British Pound</span></div>
+              <svg class="cur-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="cur-option" data-val="INR" data-flag="🇮🇳" data-label="Indian Rupee" role="option">
+              <span class="cur-opt-flag">🇮🇳</span>
+              <div class="cur-opt-info"><span class="cur-opt-code">INR</span><span class="cur-opt-name">Indian Rupee</span></div>
+              <svg class="cur-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="cur-option" data-val="JPY" data-flag="🇯🇵" data-label="Japanese Yen" role="option">
+              <span class="cur-opt-flag">🇯🇵</span>
+              <div class="cur-opt-info"><span class="cur-opt-code">JPY</span><span class="cur-opt-name">Japanese Yen</span></div>
+              <svg class="cur-opt-check" width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
         </div>
+
 
         <!-- Profile -->
         <button class="profile-btn" id="profileBtn" title="Profile">

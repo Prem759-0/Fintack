@@ -1141,7 +1141,15 @@ function navigateTo(section) {
   });
 
   const titles = { dashboard:'Dashboard', transactions:'Transactions', budget:'Budgets', goals:'Goals', analytics:'Analytics', settings:'Settings' };
-  setElText('pageTitle', titles[section]||section);
+  let title = titles[section] || section;
+  // Personalize dashboard title with time-of-day greeting
+  if (section === 'dashboard') {
+    const hr = new Date().getHours();
+    const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+    const name = S.profile.name || 'User';
+    title = `${greet}, ${name} ✦`;
+  }
+  setElText('pageTitle', title);
 
   if (section==='analytics') setTimeout(renderAllCharts, 60);
   if (section==='budget')    renderBudgetList();
@@ -1229,6 +1237,15 @@ function applyProfile() {
   // Update topbar profile tooltip
   const profileBtn = document.getElementById('profileBtn');
   if (profileBtn) profileBtn.title = name||'Profile';
+  // Sync custom currency dropdown display
+  const _flags = { USD:'🇺🇸', EUR:'🇪🇺', GBP:'🇬🇧', INR:'🇮🇳', JPY:'🇯🇵' };
+  const _flag = document.getElementById('curFlag');
+  const _code = document.getElementById('curCode');
+  if (_flag) _flag.textContent = _flags[currency] || '🇺🇸';
+  if (_code) _code.textContent = currency || 'USD';
+  document.querySelectorAll('.cur-option').forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.val === currency);
+  });
 }
 
 // ==========================================
@@ -1369,6 +1386,22 @@ function init() {
   renderAll();
   renderNotifPanel();
 
+  // Personalized dashboard title on load
+  navigateTo('dashboard');
+
+  // Show welcome toast on first load after login
+  try {
+    const authUser = JSON.parse(localStorage.getItem('ft2_auth_user'));
+    const justLoggedIn = authUser && (Date.now() - (authUser.loggedAt||0)) < 10000;
+    if (justLoggedIn) {
+      const firstName = (authUser.name || 'User').split(' ')[0];
+      setTimeout(() => showToast(`Welcome back, ${firstName}! 🚀`, 'success'), 600);
+      // Mark as shown so it doesn't repeat on refresh
+      authUser.loggedAt = 0;
+      localStorage.setItem('ft2_auth_user', JSON.stringify(authUser));
+    }
+  } catch(e) {}
+
   // Initial nav pill
   setTimeout(() => animateNavPill('dashboard'), 100);
 
@@ -1405,15 +1438,68 @@ function init() {
     if (btn) applyAccent(btn.dataset.color);
   });
 
-  // Global currency
-  document.getElementById('globalCurrency')?.addEventListener('change', e => {
-    S.activeCurrency = e.target.value;
-    S.profile.currency = e.target.value;
+  // ---- Custom Currency Dropdown ----
+  const CURRENCY_FLAGS_MAP = { USD:'🇺🇸', EUR:'🇪🇺', GBP:'🇬🇧', INR:'🇮🇳', JPY:'🇯🇵' };
+
+  function setCurrency(val) {
+    S.activeCurrency = val;
+    S.profile.currency = val;
     save.prof(); applyProfile();
     updateCurrencyPrefixes();
     renderAll();
     setTimeout(renderAllCharts, 50);
+    // Sync hidden select
+    const nativeSel = document.getElementById('globalCurrency');
+    if (nativeSel) nativeSel.value = val;
+    // Update trigger display
+    const flag = document.getElementById('curFlag');
+    const code = document.getElementById('curCode');
+    if (flag) flag.textContent = CURRENCY_FLAGS_MAP[val] || '';
+    if (code) code.textContent = val;
+    // Update selected state in panel
+    document.querySelectorAll('.cur-option').forEach(opt => {
+      opt.classList.toggle('selected', opt.dataset.val === val);
+    });
+    closeCurPanel();
+  }
+
+  function openCurPanel() {
+    const panel = document.getElementById('curPanel');
+    const trigger = document.getElementById('curTrigger');
+    if (panel) panel.classList.add('open');
+    if (trigger) trigger.setAttribute('aria-expanded', 'true');
+  }
+  function closeCurPanel() {
+    const panel = document.getElementById('curPanel');
+    const trigger = document.getElementById('curTrigger');
+    if (panel) panel.classList.remove('open');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  document.getElementById('curTrigger')?.addEventListener('click', e => {
+    e.stopPropagation();
+    const panel = document.getElementById('curPanel');
+    if (panel?.classList.contains('open')) closeCurPanel();
+    else openCurPanel();
   });
+
+  document.getElementById('curPanel')?.addEventListener('click', e => {
+    const opt = e.target.closest('.cur-option');
+    if (opt && opt.dataset.val) setCurrency(opt.dataset.val);
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#currencyDropdownWrap')) closeCurPanel();
+  });
+
+  // Init selected state in dropdown
+  document.querySelectorAll('.cur-option').forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.val === S.activeCurrency);
+  });
+  const initFlag = document.getElementById('curFlag');
+  const initCode = document.getElementById('curCode');
+  if (initFlag) initFlag.textContent = CURRENCY_FLAGS_MAP[S.activeCurrency] || '🇺🇸';
+  if (initCode) initCode.textContent = S.activeCurrency || 'USD';
 
   // Transaction type buttons
   document.getElementById('typeIncome')?.addEventListener('click', () => setType('income'));
