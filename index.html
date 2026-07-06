@@ -618,16 +618,27 @@
     <section class="section" id="section-settings">
       <div class="settings-grid">
 
-        <!-- Profile Card -->
+        <!-- Account Card (full width) -->
+        <div class="glass-card settings-card" style="grid-column:1/-1;background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(167,139,250,0.04))">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div style="display:flex;align-items:center;gap:20px">
+              <div class="profile-avatar-large" id="profileAvatarLarge" style="width:64px;height:64px;font-size:1.6rem;flex-shrink:0">U</div>
+              <div>
+                <p id="settingsGreeting" style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--text-primary);margin-bottom:4px">Hello, User 👋</p>
+                <p id="profileEmailDisplay" style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">No email set</p>
+                <p id="profileCurrencyDisplay" style="font-size:0.8rem;color:var(--text-muted)">USD – US Dollar</p>
+              </div>
+            </div>
+            <button onclick="handleLogout()" style="display:flex;align-items:center;gap:10px;padding:12px 22px;background:rgba(240,65,90,0.12);border:1.5px solid rgba(240,65,90,0.3);border-radius:10px;color:var(--expense);font-family:'Inter',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:0.2s" onmouseover="this.style.background='rgba(240,65,90,0.22)'" onmouseout="this.style.background='rgba(240,65,90,0.12)'">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        <!-- Profile Settings Card -->
         <div class="glass-card settings-card">
           <h2 class="section-heading">Profile Settings</h2>
-          <div class="profile-preview">
-            <div class="profile-avatar-large" id="profileAvatarLarge">U</div>
-            <div class="profile-info">
-              <p class="profile-name-display" id="profileNameDisplay">User</p>
-              <p class="profile-currency-display" id="profileCurrencyDisplay">USD – US Dollar</p>
-            </div>
-          </div>
           <form id="profileForm" autocomplete="off">
             <div class="form-group">
               <label for="profileName">Display Name</label>

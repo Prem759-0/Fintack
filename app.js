@@ -62,6 +62,7 @@ let S = {
   pendingDeleteId: null,
   pendingDeleteType: null,
   pendingReset:    false,
+  pendingLogout:   false,
   pendingGoalId:   null,
   notifPanelOpen:  false,
   fabOpen:         false,
@@ -103,7 +104,17 @@ function loadState() {
 // ==========================================
 
 function handleLogout() {
-  if (!confirm('Are you sure you want to sign out?')) return;
+  // Use the app's own confirm modal instead of native confirm()
+  S.pendingLogout = true;
+  S.pendingReset = false;
+  S.pendingDeleteId = null;
+  openModal('👋', 'Sign Out', 'Are you sure you want to sign out of FinTrack Pro?');
+  // Change confirm button label
+  const confirmBtn = document.getElementById('modalConfirm');
+  if (confirmBtn) { confirmBtn.textContent = 'Sign Out'; confirmBtn.style.background = 'var(--expense)'; }
+}
+
+function executeLogout() {
   localStorage.removeItem('ft2_auth_user');
   window.location.replace('login.html');
 }
@@ -1201,18 +1212,23 @@ function applyAccent(color) {
 // ==========================================
 
 function applyProfile() {
-  const { name, currency } = S.profile;
+  const { name, currency, email } = S.profile;
   const init = (name||'U').charAt(0).toUpperCase();
   setElText('avatarInitials', init);
   setElText('profileAvatarLarge', init);
   setElText('profileNameDisplay', name||'User');
   setElText('profileCurrencyDisplay', `${currency} – ${CURRENCY_NAMES[currency]||''}`);
+  setElText('profileEmailDisplay', email||'No email set');
+  setElText('settingsGreeting', `Hello, ${name||'User'} 👋`);
   const pn = document.getElementById('profileName');
   const pc = document.getElementById('profileCurrency');
   const pe = document.getElementById('profileEmail');
   if (pn) pn.value = name||'';
   if (pc) pc.value = currency||'USD';
-  if (pe) pe.value = S.profile.email||'';
+  if (pe) pe.value = email||'';
+  // Update topbar profile tooltip
+  const profileBtn = document.getElementById('profileBtn');
+  if (profileBtn) profileBtn.title = name||'Profile';
 }
 
 // ==========================================
@@ -1256,7 +1272,10 @@ function openModal(icon, title, msg) {
 
 function closeModal() {
   document.getElementById('confirmModal').classList.remove('open');
-  S.pendingDeleteId=null; S.pendingDeleteType=null; S.pendingReset=false;
+  S.pendingDeleteId=null; S.pendingDeleteType=null; S.pendingReset=false; S.pendingLogout=false;
+  // Restore confirm button to default
+  const confirmBtn = document.getElementById('modalConfirm');
+  if (confirmBtn) { confirmBtn.textContent = 'Confirm'; confirmBtn.style.background = ''; }
 }
 
 // ==========================================
@@ -1443,6 +1462,13 @@ function init() {
     const gcur = document.getElementById('globalCurrency');
     if (gcur) gcur.value = S.activeCurrency;
     save.prof(); applyProfile(); updateCurrencyPrefixes(); renderAll();
+    // Also update the auth session so name persists after reload
+    try {
+      const authUser = JSON.parse(localStorage.getItem('ft2_auth_user')) || {};
+      authUser.name  = S.profile.name;
+      authUser.email = S.profile.email;
+      localStorage.setItem('ft2_auth_user', JSON.stringify(authUser));
+    } catch(e) {}
     showToast('✨ Profile updated!','success');
   });
 
@@ -1481,6 +1507,7 @@ function init() {
   // Modal buttons
   document.getElementById('modalCancel')?.addEventListener('click', closeModal);
   document.getElementById('modalConfirm')?.addEventListener('click', () => {
+    if (S.pendingLogout) { executeLogout(); return; }
     if (S.pendingReset) executeReset();
     else if (S.pendingDeleteId) executeDelete();
     closeModal();
